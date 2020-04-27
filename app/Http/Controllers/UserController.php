@@ -11,8 +11,24 @@ class UserController extends Controller
 {
     public function import()
     {
-        Excel::import(new UsersImport, request()->file('your_file'));
+        if(request()->has('your_file')) {
+            try {
+                $uploadedFile = request()->file('your_file');
+                Excel::import(new UsersImport, $uploadedFile);
+                return response()->json(['success'=>true], 200);
+            } catch (\Exception $e) {
+                $responseCode = Response::HTTP_INTERNAL_SERVER_ERROR;
+                $ret = array(
+                    'success' => false,
+                    'error' => array(
+                        'message' => $e->getMessage(),
+                        'trace' => $e->getTrace()
+                    )
+                );
+                return response()->json($ret, $responseCode);
+            }
+        }
 
-        return response()->json(['success'=>true]);
+        return response()->json(['success'=>false], 500);
     }
 }

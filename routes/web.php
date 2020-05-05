@@ -16,3 +16,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Auth::routes(['verify' => true]);
+
+Route::get('/home', function () {
+    return view('home');
+})->middleware('auth');
+
+Route::get('/login/passwordless', 'Auth\PasswordlessLoginController@index')->name('passwordlessLoginPage');
+Route::post('/login/passwordless', 'Auth\PasswordlessLoginController@sendToken')->name('passwordlessLogin');
+Route::get('/login/passwordless/{token}', 'Auth\PasswordlessLoginController@validateToken');
